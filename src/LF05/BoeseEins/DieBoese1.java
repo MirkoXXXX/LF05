@@ -1,4 +1,4 @@
-package LF05;
+package LF05.BoeseEins;
 
 import java.util.ArrayList;
 import java.util.List;

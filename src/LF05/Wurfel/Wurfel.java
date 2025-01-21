@@ -1,4 +1,4 @@
-package LF05;
+package LF05.Wurfel;
 
 import static util.IO.*;
 

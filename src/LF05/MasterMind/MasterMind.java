@@ -1,4 +1,4 @@
-package LF05;
+package LF05.MasterMind;
 
 import java.util.HashSet;
 import java.util.Random;
