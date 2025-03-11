@@ -12,6 +12,11 @@ public class Nahrung extends Gegenstand{
 
     @Override
     public String getInfo() {
-        return "";
+        return "Nahrung{" +
+                "name='" + getName() + '\'' +
+                ", beschreibung='" + getBeschreibung() + '\'' +
+                ", gewicht=" + getGewicht() +
+                ", naerwert=" +naerwert +
+                '}';
     }
 }

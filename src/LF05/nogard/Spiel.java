@@ -13,6 +13,7 @@ import java.util.Scanner;
  */
 public class Spiel {
 	private Bereich aktiverBereich;
+	private Spieler spieler;
 
 	public Spiel(){
 		erzeugeDorf();
@@ -21,32 +22,59 @@ public class Spiel {
 	private void erzeugeDorf() {
 		// Die Bereiche erzeugen.
 		Bereich friedhof = new Bereich("auf einem Friedhof, umgeben von dunklen Tannen");
-		Bereich wald = new Bereich("im dunklen Stadtwald von Nogard");
-		Bereich taverne = new Bereich("in der Taverne, mit zwielichtigen Gestalten an der Theke");
 		Bereich hexenhaus = new Bereich("im finsteren Hexenhaus");
 		Bereich rathaus = new Bereich("im Rathaus von Nogard");
-		Bereich weinkeller = new Bereich("im weinkeller");
+		Bereich taverne = new Bereich("in der Taverne, mit zwielichtigen Gestalten an der Theke");
+		Bereich wald = new Bereich("im dunklen Stadtwald von Nogard");
+		Bereich hoehle = new Bereich("in einer dunklen und feuchten H�hle");
+		Bereich kraeuterkeller = new Bereich("im Kr�uterkeller der Dorfhexe");
+		Bereich weinkeller = new Bereich("im Weinkeller der Taverne");
 
 		// Die Nachbarschaften festlegen.
 		friedhof.setNachbarn(Richtungen.SOUTH, hexenhaus);
-		wald.setNachbarn(Richtungen.NORTH, hexenhaus);
-		wald.setNachbarn(Richtungen.EAST, taverne);
-		taverne.setNachbarn(Richtungen.NORTH, rathaus);
-		taverne.setNachbarn(Richtungen.SOUTH, wald);
-		taverne.setNachbarn(Richtungen.DOWN, weinkeller);
-		weinkeller.setNachbarn(Richtungen.UP, taverne);
 		hexenhaus.setNachbarn(Richtungen.NORTH, friedhof);
 		hexenhaus.setNachbarn(Richtungen.EAST, rathaus);
 		hexenhaus.setNachbarn(Richtungen.SOUTH, wald);
+		hexenhaus.setNachbarn(Richtungen.DOWN, kraeuterkeller);
 		rathaus.setNachbarn(Richtungen.SOUTH, taverne);
 		rathaus.setNachbarn(Richtungen.WEST, hexenhaus);
+		taverne.setNachbarn(Richtungen.NORTH, rathaus);
+		taverne.setNachbarn(Richtungen.WEST, wald);
+		taverne.setNachbarn(Richtungen.DOWN, weinkeller);
+		wald.setNachbarn(Richtungen.NORTH, hexenhaus);
+		wald.setNachbarn(Richtungen.EAST, taverne);
+		hoehle.setNachbarn(Richtungen.NORTH, kraeuterkeller);
+		hoehle.setNachbarn(Richtungen.EAST, weinkeller);
+		kraeuterkeller.setNachbarn(Richtungen.SOUTH, hoehle);
+		kraeuterkeller.setNachbarn(Richtungen.UP, hexenhaus);
+		weinkeller.setNachbarn(Richtungen.WEST, hoehle);
+		weinkeller.setNachbarn(Richtungen.UP, taverne);
+
+		// Die Gegenst�nde in die Bereiche legen.
+		friedhof.platzierenGegenstand(new Gegenstand("Taschentuch", "zum Trocknen deiner Tr�nen", 0.1));
+		hexenhaus.platzierenGegenstand(new Gegenstand("Kessel", "zum Kochen der Zaubertr�nke", 5.0));
+		hexenhaus.platzierenGegenstand(new Gegenstand("Krug", "mit fauligem Kr�tenwasser", 5.0));
+		hexenhaus.platzierenGegenstand(new Gegenstand("Schale", "mit getrockneten Kr�utern", 2.5));
+		hexenhaus.platzierenGegenstand(new Nahrung("Froschschenkel", "mit ranziger Knoblauchbutter", 700));
+		taverne.platzierenGegenstand(new Nahrung("Bier", "mit luftiger Krone", 500));
+		taverne.platzierenGegenstand(new Nahrung("Wildschweinbraten", "mit Kl��en und klumpiger So�e", 1200));
+		taverne.platzierenGegenstand(new Gegenstand("Tisch", "mit verschmierten Essensresten und dicken Kerben", 35.0));
+		taverne.platzierenGegenstand(new Gegenstand("Stuhl", "mit wackligen Beinen und gebrochener Lehne", 2.5));
+		wald.platzierenGegenstand(new Nahrung("Pilze", "leuchtend rot mit wei�en Punkten", 200));
+		weinkeller.platzierenGegenstand(new Gegenstand("Fass", "mit lange gelagertem Rotwein", 10.0));
+		hoehle.platzierenGegenstand(new Gegenstand("Spinne", "mit gro�en funkelnden Augen und acht haarigen Beinen", 0.2));
+		hoehle.platzierenGegenstand(new Gegenstand("Spinnennetz", "mit Spinne", 0.3));
+		hoehle.platzierenGegenstand(new Gegenstand("Skelett", "ohne Totenkopf", 7.5));
+
+		// Den Spieler festlegen.
+		spieler = new Spieler("Trollo", 20, 3000, wald);
 
 		// Das Spielt startet im Wald.
 		aktiverBereich = wald;
 	}
 
 	/**
-     * Die Hauptmethode zum Spielen. 
+     * Die Hauptmethode zum Spielen.
      * L�uft bis zum Ende des Spiels in einer Schleife.
      */
     public void spielen() {
@@ -75,9 +103,7 @@ public class Spiel {
 
 	private boolean ausfuehrenBefehl(Befehl befehl) {
 		boolean end = false;
-		// Auswerten des Befehls.
-		String befehlWort = befehl.getBefehlswort();
-		switch (befehlWort) {
+		switch (befehl.getBefehlswort()) {
 			case "go":
 				wechselBereich(befehl.getBefehlszusatz());
 				break;
@@ -95,17 +121,20 @@ public class Spiel {
 	}
 
 	private void wechselBereich(String befehlszusatz) {
+		// Neuen Bereich ermitteln.
 		Richtungen richtung = Richtungen.valueOf(befehlszusatz.toUpperCase());
-		Bereich neuerBereich = aktiverBereich.getNachbar(richtung);
-        // Auswertung der gefundenen Bereichs.
+		Bereich neuerBereich = spieler.getBereich().getNachbar(richtung);
+		// Auswertung der gefundenen Bereichs.
 		if (neuerBereich == null) {
 			System.out.println("Dort geht es nicht weiter.");
+		} else {
+			try {
+				spieler.gehenInBereich(neuerBereich);
+			} catch (SpielerZuSchwachException e) {
+				System.out.println(e.getMessage());
+			}
+			System.out.println(spieler.getInfo());
 		}
-		else {
-			aktiverBereich = neuerBereich;
-			System.out.println(aktiverBereich.getInfo());
-		}
-
 	}
 
 	private static void ausgebenHilfeText() {

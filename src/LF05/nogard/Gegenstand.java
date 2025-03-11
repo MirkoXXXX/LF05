@@ -3,9 +3,9 @@ package LF05.nogard;
 public class Gegenstand {
     private String name;
     private String Beschreibung;
-    private float Gewicht;
+    private double Gewicht;
 
-    public Gegenstand(String name, String Beschreibung, float Gewicht) {
+    public Gegenstand(String name, String Beschreibung, double Gewicht) {
         this.name = name;
         this.Beschreibung = Beschreibung;
         this.Gewicht = Gewicht;
@@ -17,10 +17,15 @@ public class Gegenstand {
     public String getBeschreibung() {
         return Beschreibung;
     }
-    public float getGewicht() {
+    public double getGewicht() {
         return Gewicht;
     }
-    public String getInfo(){
-        return "";
+
+    public String getInfo() {
+        return "Gegenstand{" +
+                "name='" + name + '\'' +
+                ", Beschreibung='" + Beschreibung + '\'' +
+                ", Gewicht=" + Gewicht +
+                '}';
     }
 }

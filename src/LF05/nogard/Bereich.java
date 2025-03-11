@@ -40,10 +40,10 @@ public class Bereich {
 		}
 	}
 
-	public String suchenGegenstand(String n) throws GegenstandNichtVorhandenException {
+	public Gegenstand suchenGegenstand(String n) throws GegenstandNichtVorhandenException {
 		for (Gegenstand g : gegenstaende) {
 			if (g.getName().equalsIgnoreCase(n)) {
-				return g.getName();
+				return g;
 			}
 		}
 		throw new GegenstandNichtVorhandenException("Gegenstand: " + n + " nicht vorhanden!");
@@ -69,9 +69,17 @@ public class Bereich {
 		return nachbarn.get(richtung);
 	}
 
+	public List<Gegenstand> getGegenstaende() {
+		return gegenstaende;
+	}
+
 	public String getInfo(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("Du befindest dich ").append(this.getBeschreibung()).append(".");
+		sb.append("\nDeine Gegenstaende sind:");
+		for (Gegenstand g : gegenstaende) {
+            sb.append("\n\t").append(g.getName()).append(" - ").append(g.getBeschreibung());
+        }
 		sb.append("\nDu kannst gehen nach:");
 		for (Map.Entry<Richtungen, Bereich> paar : nachbarn.entrySet()) {
 			if(paar.getValue() != null) {
